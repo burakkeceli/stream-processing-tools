@@ -1,0 +1,14 @@
+.settings
+.classpath
+.project
+.ropeproject
+target
+*.local
+*.iml
+*.pyc
+.idea
+*.versionsBackup
+docker/tomcat/logs/
+docker/kafka/logs/
+docker/zookeeper/logs/
+*console.log

@@ -1,0 +1,13 @@
+version: "3"
+services:
+  kafka:                      # includes zookeper as well
+    image: spotify/kafka:latest
+    hostname: kafka
+    ports:
+      - 9092:9092
+    environment:
+      ADVERTISED_HOST: localhost  # hostname of zookeper
+      ADVERTISED_PORT: 9092
+    volumes:
+      - ${PWD}/docker/kafka/logs/:/opt/kafka_2.11-0.10.1.0/logs/
+      - ${PWD}/docker/zookeeper/logs/:/var/log/zookeeper/
