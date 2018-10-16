@@ -9,17 +9,19 @@ import org.apache.kafka.clients.admin.{AdminClient, NewTopic}
 import scala.collection.JavaConverters
 
 object KafkaAdminClient {
+  def main(args: Array[String]) {
+    val topicProperties: Properties = new Properties()
+    topicProperties.setProperty(BOOTSTRAP_SERVERS_CONFIG, brokers)
+    createTopic
 
-  private val topicProperties : Properties = new Properties()
-  topicProperties.setProperty(BOOTSTRAP_SERVERS_CONFIG, brokers)
+    def createTopic = {
+      AdminClient.create(topicProperties).createTopics(util.Arrays.asList(getNewTopic))
+    }
 
-  def createTopic = {
-    AdminClient.create(topicProperties).createTopics(util.Arrays.asList(getNewTopic))
-  }
-
-  private def getNewTopic = {
-    val partitions = 1
-    val replication : Short = 1
-    new NewTopic(topicName, partitions, replication).configs(JavaConverters.mapAsJavaMap(Map()))
+    def getNewTopic = {
+      val partitions = 3
+      val replication: Short = 1
+      new NewTopic(wordCountResultTopic, partitions, replication).configs(JavaConverters.mapAsJavaMap(Map()))
+    }
   }
 }

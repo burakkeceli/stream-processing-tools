@@ -1,6 +1,7 @@
 import config.Config
 
 package object setup {
-  val brokers : String = Config().getString("consumer.brokers")
-  val topicName : String = Config().getString("consumer.topic")
+  val brokers : String = Config().getString("brokers")
+  val wordCountResultTopic : String = Config().getString("result-topic")
+  val sentenceProducerTopic : String = Config().getString("sentence-producer-topic")
 }
