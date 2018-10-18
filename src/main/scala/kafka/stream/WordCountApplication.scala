@@ -26,12 +26,14 @@ object WordCountApplication extends App {
     .groupBy((_, word) => word)
     .count()
 
+  println(s"word count $wordCounts")
   wordCounts.toStream.to(wordCountResultTopic)
 
   val streams: KafkaStreams = new KafkaStreams(builder.build(), props)
+  streams.cleanUp()
   streams.start()
 
   sys.ShutdownHookThread {
-    streams.close(10, TimeUnit.SECONDS)
+    streams.close(100, TimeUnit.SECONDS)
   }
 }

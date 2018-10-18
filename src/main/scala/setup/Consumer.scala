@@ -12,7 +12,7 @@ import scala.collection.JavaConverters.{asJavaCollection, asScalaIterator}
 
 object Consumer extends App {
 
-  private val groupId = Config().getString("consumer.groupId")
+  private val groupId = Config().getString("groupId")
   private val props = consumerConfig(brokers, groupId)
 
   val consumer = new KafkaConsumer[String, String](props)

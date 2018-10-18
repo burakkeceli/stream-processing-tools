@@ -13,11 +13,12 @@ object Producer extends App {
   sendData
 
   private def sendData = {
-    var counter = 0
     val data = new ProducerRecord[String, String](sentenceProducerTopic, null, "Ali veli 49 50 Ali veli 123 asd")
-    producer.send(data)
-    println("Data has been sent")
-    counter += 1
+    while (true) {
+      producer.send(data)
+      println("Data has been sent")
+      Thread.sleep(1000)
+    }
   }
 
   def producerConfig(brokers: String): Properties = {
