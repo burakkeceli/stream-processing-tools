@@ -13,7 +13,7 @@ object Producer extends App {
   sendData
 
   private def sendData = {
-    val data = new ProducerRecord[String, String](sentenceProducerTopic, null, "Ali veli 49 50 Ali veli 123 asd")
+    val data = new ProducerRecord[String, String](sentenceProducerTopic, null, "Word count using kafka streams. Kafka count is 2")
     while (true) {
       producer.send(data)
       println("Data has been sent")

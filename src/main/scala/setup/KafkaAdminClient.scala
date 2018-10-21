@@ -1,23 +1,38 @@
 package setup
 
-import java.util
+import java.util.Arrays.asList
 import java.util.Properties
 
 import org.apache.kafka.clients.admin.AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG
-import org.apache.kafka.clients.admin.{AdminClient, NewTopic}
+import org.apache.kafka.clients.admin.{AdminClient, CreateTopicsResult, NewTopic}
 
+import scala.collection.JavaConversions._
 import scala.collection.JavaConverters
 
 object KafkaAdminClient {
   def main(args: Array[String]) {
     val topicProperties: Properties = new Properties()
     topicProperties.setProperty(BOOTSTRAP_SERVERS_CONFIG, brokers)
-    createTopic
+    createTopicList
 
-    def createTopic = {
-      println("Topic will be created")
-      AdminClient.create(topicProperties).createTopics(util.Arrays.asList(getNewTopic(wordCountResultTopic), getNewTopic(sentenceProducerTopic)))
-      println("Topic is created")
+    def createTopicList = {
+      println("Topics will be created")
+      val result: CreateTopicsResult = AdminClient
+        .create(topicProperties)
+        .createTopics(
+          asList(
+            getNewTopic(wordCountResultTopic),
+            getNewTopic(sentenceProducerTopic)))
+
+      for (entry <- result.values.entrySet) {
+        try {
+          entry.getValue.get
+          println(s"topic ${entry.getKey} created")
+        } catch {
+          case _: Throwable =>
+            println("Unable to create topic")
+        }
+      }
     }
 
     def getNewTopic(topic: String) = {

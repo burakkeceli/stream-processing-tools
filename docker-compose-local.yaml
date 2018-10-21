@@ -8,7 +8,7 @@ services:
       - 9092:9092
     environment:
       ADVERTISED_HOST: localhost  # hostname of zookeper
-      ADVERTISED_PORT: 9092
+      ADVERTISED_PORT: 9092 # broker ip
     volumes:
       - ${PWD}/docker/kafka/logs/:/opt/kafka_2.11-0.10.1.0/logs/
       - ${PWD}/docker/zookeeper/logs/:/var/log/zookeeper/

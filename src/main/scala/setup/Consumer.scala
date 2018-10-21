@@ -6,7 +6,7 @@ import java.util.Properties
 import config.Config
 import org.apache.kafka.clients.consumer.ConsumerConfig._
 import org.apache.kafka.clients.consumer.{ConsumerRecords, KafkaConsumer}
-import org.apache.kafka.common.serialization.StringDeserializer
+import org.apache.kafka.common.serialization.{LongDeserializer, StringDeserializer}
 
 import scala.collection.JavaConverters.{asJavaCollection, asScalaIterator}
 
@@ -26,14 +26,14 @@ object Consumer extends App {
     props.put(AUTO_COMMIT_INTERVAL_MS_CONFIG, "1000")
     props.put(SESSION_TIMEOUT_MS_CONFIG, "30000")
     props.put(KEY_DESERIALIZER_CLASS_CONFIG, classOf[StringDeserializer])
-    props.put(VALUE_DESERIALIZER_CLASS_CONFIG, classOf[StringDeserializer])
+    props.put(VALUE_DESERIALIZER_CLASS_CONFIG, classOf[LongDeserializer])
     props
   }
 
   while (true) {
     val polledValues: ConsumerRecords[String, String] = consumer.poll(Duration.ofSeconds(100))
     for (record <- asScalaIterator(polledValues.iterator())) {
-      println("Received message: (" + record.key() + ", " + record.value() + ") at offset " + record.offset())
+      println(s"Received message: (${record.key()} , ${record.value()}) at offset ${record.offset()})")
     }
   }
 }
