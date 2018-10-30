@@ -25,8 +25,16 @@ object WordCountApplication extends App {
 
   val builder: StreamsBuilder = new StreamsBuilder
   val textLines: KStream[String, String] = builder.stream[String, String](sentenceProducerTopic)
-  val wordCounts: KTable[String, Long] = textLines
-    .flatMapValues(textLine => textLine.toLowerCase.split("\\W+"))
+
+  //textLines.map((key, value) => (key.toLowerCase(), value.toLowerCase())) => if you want to change both key and value
+
+  val value: KStream[String, String] = textLines
+    //.mapValues(textLine => textLine.toLowerCase()) => could have been done like this as well
+    .flatMapValues(textLine => textLine.toLowerCase().split("\\W+"))
+
+  // Another way: value.selectKey((_, word) => word).groupByKey.count()
+
+  val wordCounts: KTable[String, Long] = value
     .groupBy((_, word) => word)
     .count()
 

@@ -12,3 +12,4 @@ docker/tomcat/logs/
 docker/kafka/logs/
 docker/zookeeper/logs/
 *console.log
+info/
