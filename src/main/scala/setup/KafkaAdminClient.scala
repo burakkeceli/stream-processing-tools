@@ -10,35 +10,36 @@ import scala.collection.JavaConversions._
 import scala.collection.JavaConverters
 
 object KafkaAdminClient {
+  val topicProperties: Properties = new Properties()
+  topicProperties.setProperty(BOOTSTRAP_SERVERS_CONFIG, brokers)
+
   def main(args: Array[String]) {
-    val topicProperties: Properties = new Properties()
-    topicProperties.setProperty(BOOTSTRAP_SERVERS_CONFIG, brokers)
-    createTopicList
+    createTopicList()
+  }
 
-    def createTopicList = {
-      println("Topics will be created")
-      val result: CreateTopicsResult = AdminClient
-        .create(topicProperties)
-        .createTopics(
-          asList(
-            getNewTopic(wordCountResultTopic),
-            getNewTopic(sentenceProducerTopic)))
+  private def createTopicList() : Unit = {
+    println("Topics will be created")
+    val result: CreateTopicsResult = AdminClient
+      .create(topicProperties)
+      .createTopics(
+        asList(
+          getNewTopic(wordCountResultTopic),
+          getNewTopic(sentenceProducerTopic)))
 
-      for (entry <- result.values.entrySet) {
-        try {
-          entry.getValue.get
-          println(s"topic ${entry.getKey} created")
-        } catch {
-          case _: Throwable =>
-            println("Unable to create topic")
-        }
+    for (entry <- result.values.entrySet) {
+      try {
+        entry.getValue.get
+        println(s"topic ${entry.getKey} created")
+      } catch {
+        case _: Throwable =>
+          println("Unable to create topic")
       }
     }
+  }
 
-    def getNewTopic(topic: String) = {
-      val partitions = 3
-      val replication: Short = 1
-      new NewTopic(topic, partitions, replication).configs(JavaConverters.mapAsJavaMap(Map()))
-    }
+  private def getNewTopic(topic: String) = {
+    val partitions = 3
+    val replication: Short = 1
+    new NewTopic(topic, partitions, replication).configs(JavaConverters.mapAsJavaMap(Map()))
   }
 }
