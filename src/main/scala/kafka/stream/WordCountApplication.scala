@@ -26,6 +26,8 @@ object WordCountApplication extends App {
   val builder: StreamsBuilder = new StreamsBuilder
   val textLines: KStream[String, String] = builder.stream[String, String](sentenceProducerTopic)
 
+  // val textLinesInTable: KTable[String, String] = builder.table[String, String](sentenceProducerTopic) -> if you want to create KTable
+
   //textLines.map((key, value) => (key.toLowerCase(), value.toLowerCase())) => if you want to change both key and value
 
   val value: KStream[String, String] = textLines
@@ -42,6 +44,8 @@ object WordCountApplication extends App {
   val streams: KafkaStreams = new KafkaStreams(builder.build(), props)
   streams.cleanUp()
   streams.start()
+
+  println(streams.toString)
 
   sys.ShutdownHookThread {
     streams.close(100, TimeUnit.SECONDS)
