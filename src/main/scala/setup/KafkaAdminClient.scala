@@ -3,22 +3,23 @@ package setup
 import java.util.Arrays.asList
 import java.util.Properties
 
+import Constants.{brokers, sentenceProducerTopic, wordCountResultTopic}
 import org.apache.kafka.clients.admin.AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG
 import org.apache.kafka.clients.admin.{AdminClient, CreateTopicsResult, NewTopic}
+import org.slf4j.LoggerFactory
 
 import scala.collection.JavaConversions._
 import scala.collection.JavaConverters
 
-object KafkaAdminClient {
+object KafkaAdminClient extends App {
+  private val logger = LoggerFactory.getLogger(getClass)
+
   val topicProperties: Properties = new Properties()
   topicProperties.setProperty(BOOTSTRAP_SERVERS_CONFIG, brokers)
-
-  def main(args: Array[String]) {
-    createTopicList()
-  }
+  createTopicList()
 
   private def createTopicList() : Unit = {
-    println("Topics will be created")
+    logger.info("Topics will be created")
     val result: CreateTopicsResult = AdminClient
       .create(topicProperties)
       .createTopics(
@@ -29,10 +30,10 @@ object KafkaAdminClient {
     for (entry <- result.values.entrySet) {
       try {
         entry.getValue.get
-        println(s"topic ${entry.getKey} created")
+        logger.info(s"topic ${entry.getKey} created")
       } catch {
         case _: Throwable =>
-          println("Unable to create topic")
+          logger.warn(s"Unable to create topic ${entry.getKey}")
       }
     }
   }

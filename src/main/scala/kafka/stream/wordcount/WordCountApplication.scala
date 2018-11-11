@@ -1,17 +1,20 @@
-package kafka.stream
+package kafka.stream.wordcount
 
 import java.util.Properties
 import java.util.concurrent.TimeUnit
 
+import Constants.{brokers, sentenceProducerTopic, wordCountResultTopic}
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.streams.scala.ImplicitConversions._
 import org.apache.kafka.streams.scala._
 import org.apache.kafka.streams.scala.kstream._
 import org.apache.kafka.streams.{KafkaStreams, StreamsConfig}
-import setup.{brokers, sentenceProducerTopic, wordCountResultTopic}
+import org.slf4j.LoggerFactory
 
 object WordCountApplication extends App {
   import Serdes._
+
+  val logger = LoggerFactory.getLogger(getClass)
 
   val props: Properties = {
     val p = new Properties()
@@ -34,7 +37,7 @@ object WordCountApplication extends App {
     //.mapValues(textLine => textLine.toLowerCase()) => could have been done like this as well
     .flatMapValues(textLine => textLine.toLowerCase().split("\\W+"))
 
-  // Another way: value.selectKey((_, word) => word).groupByKey.count()
+  // Another way: value.selectKey((_, word) => word).groupByKey.count() -> selectKey changes the key here.
 
   val wordCounts: KTable[String, Long] = value
     .groupBy((_, word) => word)
@@ -44,8 +47,6 @@ object WordCountApplication extends App {
   val streams: KafkaStreams = new KafkaStreams(builder.build(), props)
   streams.cleanUp()
   streams.start()
-
-  println(streams.toString)
 
   sys.ShutdownHookThread {
     streams.close(100, TimeUnit.SECONDS)
